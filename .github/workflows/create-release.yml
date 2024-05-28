@@ -3,7 +3,7 @@ name: Create Release
 on:
   push:
     tags:
-      - "v*.*.*" # Matches tags like v1.0.0, v2.3.4, etc.
+      - "*.*.*" # Matches tags like 1.0.0, 2.3.4, etc.
 
 jobs:
   release:
@@ -16,7 +16,7 @@ jobs:
       - name: Extract version from tag
         id: extract_version
         run: |
-          VERSION=${GITHUB_REF#refs/tags/v}
+          VERSION=${GITHUB_REF#refs/tags/}
           echo "::set-output name=version::$VERSION"
 
       - name: Prepare release assets
@@ -57,9 +57,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.ref }}
-          release_name: ${{ github.ref }}
-          draft: true
+          tag_name: ${{ steps.extract_version.outputs.version }}
+          release_name: v${{ steps.extract_version.outputs.version }}
+          draft: false
           prerelease: false
 
       - name: Upload release asset
